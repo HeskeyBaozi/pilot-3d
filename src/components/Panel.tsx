@@ -1,11 +1,17 @@
 import { Collapse, InputNumber } from 'antd';
 import { action, computed, observable } from 'mobx';
-import { observer } from 'mobx-react';
-import React from 'react';
+import { inject, observer } from 'mobx-react';
+import React, { SyntheticEvent } from 'react';
+import { IColorsStore } from '../stores/Colors';
 import styles from './Panel.less';
 
+interface IPanelProps {
+  $colors?: IColorsStore;
+}
+
+@inject('$colors')
 @observer
-export default class Panel extends React.Component<{}> {
+export default class Panel extends React.Component<IPanelProps> {
 
   @observable
   panelFixedStyle = {
@@ -36,10 +42,26 @@ export default class Panel extends React.Component<{}> {
     }
   }
 
+  handleChange = (e: SyntheticEvent<HTMLInputElement>) => {
+    this.props.$colors!.modifyColor(e.currentTarget.name, e.currentTarget.value);
+  }
+
+  @computed
+  get ColorsList() {
+    return this.props.$colors!.list.map(({ name, value }) => {
+      return (
+        <div key={ name }>
+          <input name={ name } type={ 'color' } value={ value } onChange={ this.handleChange }/>
+          <span style={ { marginLeft: '.5rem' } }>{ name }</span>
+        </div>
+      );
+    });
+  }
+
   render() {
     return (
       <div style={ this.panelStyle } key={ 'panel' } className={ styles.panel }>
-        <Collapse>
+        <Collapse accordion={ true }>
           <Collapse.Panel key={ 'panel-position' } header={ 'Panel Position' }>
             <span style={ { marginRight: '1rem' } }>
               Top
@@ -65,6 +87,9 @@ export default class Panel extends React.Component<{}> {
                 onChange={ this.handlePanelLeftChange }
               />px
             </span>
+          </Collapse.Panel>
+          <Collapse.Panel key={ 'colors' } header={ 'Colors' }>
+            { this.ColorsList }
           </Collapse.Panel>
         </Collapse>
       </div>
