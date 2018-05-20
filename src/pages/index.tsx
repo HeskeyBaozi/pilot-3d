@@ -1,7 +1,13 @@
+import { configure } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
+import Panel from '../components/Panel';
 import styles from './index.less';
+
+configure({
+  enforceActions: true
+});
 
 @observer
 export default class IndexPage extends React.Component<{}> {
@@ -14,9 +20,7 @@ export default class IndexPage extends React.Component<{}> {
 
   render() {
     return [ (
-      <div key={ 'panel' } className={ styles.panel }>
-        Panel
-      </div>
+      <Panel key={ 'panel' }/>
     ), (
       <div key={ 'canvas-container' } className={ styles.container } ref={ this.containerRef }>
         Canvas Container
