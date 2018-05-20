@@ -1,0 +1,30 @@
+{
+  "name": "pilot-3d",
+  "version": "1.0.0",
+  "description": "Pilot 3D Canvas Sence",
+  "main": "index.js",
+  "repository": "https://github.com/HeskeyBaozi/pilot-3d.git",
+  "author": "HeskeyBaozi <hezhiyu233@foxmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "umi dev",
+    "build": "umi build"
+  },
+  "dependencies": {
+    "antd": "^3.5.2",
+    "mobx": "^4.2.1",
+    "mobx-react": "^5.1.2",
+    "mobx-state-tree": "^2.0.5",
+    "react-resize-detector": "^2.3.0",
+    "three": "^0.92.0"
+  },
+  "devDependencies": {
+    "@types/react-resize-detector": "^2.2.0",
+    "@types/three": "^0.92.0",
+    "tslint": "^5.10.0",
+    "tslint-react": "^3.6.0",
+    "typescript": "^2.8.3",
+    "umi": "^1.3.3"
+  }
+}
