@@ -10,8 +10,10 @@ export const ColorsStore = types
     blue: types.string,
     day1: types.string,
     day2: types.string,
+    dayFog: types.string,
     night1: types.string,
-    night2: types.string
+    night2: types.string,
+    nightFog: types.string
   })
   .views((self: { [key: string]: string }) => ({
     get list(): Array<{ name: string, value: string }> {

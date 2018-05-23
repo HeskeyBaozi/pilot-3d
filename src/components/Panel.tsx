@@ -1,15 +1,17 @@
-import { Collapse, InputNumber } from 'antd';
+import { Collapse, Input, InputNumber } from 'antd';
 import { action, computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import React, { SyntheticEvent } from 'react';
 import { IColorsStore } from '../stores/Colors';
+import { ISceneStore } from '../stores/Scene';
 import styles from './Panel.less';
 
 interface IPanelProps {
   $colors?: IColorsStore;
+  $scene?: ISceneStore;
 }
 
-@inject('$colors')
+@inject('$colors', '$scene')
 @observer
 export default class Panel extends React.Component<IPanelProps> {
 
@@ -46,6 +48,39 @@ export default class Panel extends React.Component<IPanelProps> {
     this.props.$colors!.modifyColor(e.currentTarget.name, e.currentTarget.value);
   }
 
+  handleCameraPositionXChange = (val?: number | string) => {
+    if (typeof val === 'number') {
+      const { $scene } = this.props;
+      $scene!.updateCameraPosition({
+        x: val,
+        y: $scene!.camera.position.y,
+        z: $scene!.camera.position.z
+      });
+    }
+  }
+
+  handleCameraPositionYChange = (val?: number | string) => {
+    if (typeof val === 'number') {
+      const { $scene } = this.props;
+      $scene!.updateCameraPosition({
+        x: $scene!.camera.position.x,
+        y: val,
+        z: $scene!.camera.position.z
+      });
+    }
+  }
+
+  handleCameraPositionZChange = (val?: number | string) => {
+    if (typeof val === 'number') {
+      const { $scene } = this.props;
+      $scene!.updateCameraPosition({
+        x: $scene!.camera.position.x,
+        y: $scene!.camera.position.y,
+        z: val
+      });
+    }
+  }
+
   @computed
   get ColorsList() {
     return this.props.$colors!.list.map(({ name, value }) => {
@@ -58,7 +93,45 @@ export default class Panel extends React.Component<IPanelProps> {
     });
   }
 
+  @computed
+  get Scene() {
+    const { $scene } = this.props;
+    return (
+      <div>
+        <p>Camera</p>
+        <div className={ styles.list }>
+          <span>Position</span>
+          <span>X</span>
+          <InputNumber
+            min={ -1000 }
+            max={ 1000 }
+            step={ 20 }
+            value={ $scene!.camera.position.x }
+            onChange={ this.handleCameraPositionXChange }
+          />
+          <span>Y</span>
+          <InputNumber
+            min={ -1000 }
+            max={ 1000 }
+            step={ 20 }
+            value={ $scene!.camera.position.y }
+            onChange={ this.handleCameraPositionYChange }
+          />
+          <span>Z</span>
+          <InputNumber
+            min={ -1000 }
+            max={ 1000 }
+            step={ 20 }
+            value={ $scene!.camera.position.z }
+            onChange={ this.handleCameraPositionZChange }
+          />
+        </div>
+      </div>
+    );
+  }
+
   render() {
+    const {} = this.props;
     return (
       <div style={ this.panelStyle } key={ 'panel' } className={ styles.panel }>
         <Collapse accordion={ true }>
@@ -68,28 +141,31 @@ export default class Panel extends React.Component<IPanelProps> {
               <InputNumber
                 min={ 0 }
                 max={ 1000 }
-                size={ 'small' }
                 step={ 20 }
                 style={ { margin: '0 .3rem' } }
                 value={ this.panelFixedStyle.top }
                 onChange={ this.handlePanelTopChange }
-              />px
+              />
             </span>
             <span>
               Left
               <InputNumber
                 min={ 0 }
-                size={ 'small' }
                 max={ 1000 }
                 step={ 20 }
                 style={ { margin: '0 .3rem' } }
                 value={ this.panelFixedStyle.left }
                 onChange={ this.handlePanelLeftChange }
-              />px
+              />
             </span>
           </Collapse.Panel>
           <Collapse.Panel key={ 'colors' } header={ 'Colors' }>
-            { this.ColorsList }
+            <div className={ styles.colorsList }>
+              { this.ColorsList }
+            </div>
+          </Collapse.Panel>
+          <Collapse.Panel key={ 'scene' } header={ 'Scene' }>
+            { this.Scene }
           </Collapse.Panel>
         </Collapse>
       </div>
