@@ -1,7 +1,7 @@
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { onAction, onSnapshot } from 'mobx-state-tree';
-import React, { MouseEventHandler } from 'react';
+import React, { MouseEventHandler, WheelEventHandler } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import * as THREE from 'three';
 import { AirPlaneStore } from '../stores/AirPlane';
@@ -86,6 +86,11 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
     $scene!.updateMousePosition({ x: e.clientX, y: e.clientY });
   }
 
+  handleWheel: WheelEventHandler<HTMLDivElement> = (e) => {
+    const { $scene } = this.props;
+    $scene!.updateCameraFov(e.deltaY);
+  }
+
   render() {
     return (
       <div
@@ -94,6 +99,7 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
         ref={ this.containerRef }
         className={ styles.container }
         onMouseMove={ this.handleMouseMove }
+        onWheel={ this.handleWheel }
       >
         <ReactResizeDetector
           key={ 'resize-detector' }

@@ -1,8 +1,9 @@
+import * as TWEEN from '@tweenjs/tween.js';
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
 import { IAirPlaneStore } from './AirPlane';
 import { IColorsSnapShot, IColorsStore } from './Colors';
-import { ISeaStore, isGeom } from './Sea';
+import { ISeaStore } from './Sea';
 import { ISkyStore } from './Sky';
 
 export const SceneStore = types
@@ -144,7 +145,6 @@ export const SceneStore = types
         self.container.height = height;
         self.renderer.setSize(width, height);
         self.cameraRef.aspect = width / height;
-        self.cameraRef.updateProjectionMatrix();
       },
       updateMousePosition({ x, y }: { x: number, y: number }) {
         self.mouse.position.x = x;
@@ -153,6 +153,17 @@ export const SceneStore = types
       updateCameraPosition({ x, y, z }: { x: number, y: number, z: number }) {
         self.camera.position = { x, y, z };
         self.cameraRef.position.set(x, y, z);
+      },
+      updateCameraFov(delta: number) {
+        let final = self.cameraRef.fov + normalize(delta, -100, 100, -20, 20);
+        final = Math.max(40, final);
+        final = Math.min(80, final);
+        new TWEEN.Tween({ delta: self.cameraRef.fov })
+          .to({ delta: final }, 500)
+          .onUpdate(({ delta: val }) => {
+            self.cameraRef.fov = val;
+          })
+          .start();
       },
       updateColors($colors: IColorsSnapShot) {
         self.scene.fog = new THREE.Fog(
@@ -202,6 +213,8 @@ export const SceneStore = types
               self.objects.airPlaneRef.propeller.rotation.x += self.basic.AirPlanePropellerRotationSpeed;
             }
             self.renderer.render(self.scene, self.cameraRef);
+            self.cameraRef.updateProjectionMatrix();
+            TWEEN.update();
             window.requestAnimationFrame(innerLoop);
           }
         })();

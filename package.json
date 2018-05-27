@@ -12,6 +12,7 @@
     "build": "umi build"
   },
   "dependencies": {
+    "@tweenjs/tween.js": "^17.2.0",
     "antd": "^3.5.2",
     "mobx": "^4.2.1",
     "mobx-react": "^5.1.2",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/react-resize-detector": "^2.2.0",
     "@types/three": "^0.92.0",
+    "@types/tween.js": "^16.9.0",
     "tslint": "^5.10.0",
     "tslint-react": "^3.6.0",
     "typescript": "^2.8.3",

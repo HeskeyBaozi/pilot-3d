@@ -859,6 +859,10 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
+"@tweenjs/tween.js@^17.2.0":
+  version "17.2.0"
+  resolved "http://registry.npm.taobao.org/@tweenjs/tween.js/download/@tweenjs/tween.js-17.2.0.tgz#21f89b709bafc4b303adae7a83b4f35a0d9e4796"
+
 "@types/node@*":
   version "10.1.0"
   resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-10.1.0.tgz#2783ee1b6c47cbd4044f4a233976c1ac5fa9e942"
@@ -880,6 +884,10 @@
   resolved "http://registry.npm.taobao.org/@types/three/download/@types/three-0.92.0.tgz#093c653a7ec66051c3279db39b3d967e70615cfb"
   dependencies:
     "@types/webvr-api" "*"
+
+"@types/tween.js@^16.9.0":
+  version "16.9.0"
+  resolved "http://registry.npm.taobao.org/@types/tween.js/download/@types/tween.js-16.9.0.tgz#af25067f86e15d2cba89b26776fc273ff7f55650"
 
 "@types/webvr-api@*":
   version "0.0.34"
