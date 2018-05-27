@@ -127,15 +127,17 @@ export const SceneStore = types
     scene.add(shadowLight);
     scene.add(ambientLight);
 
+    const objects: {
+      seaRef?: ISeaStore,
+      skyRef?: ISkyStore,
+      airPlaneRef?: IAirPlaneStore
+    } = {};
+
     return {
-      cameraRef, renderer, scene
+      cameraRef, renderer, scene, objects
     };
   })
   .actions((self) => {
-    let seaRef: ISeaStore;
-    let skyRef: ISkyStore;
-    let airPlaneRef: IAirPlaneStore;
-
     return {
       updateSize(width: number, height: number) {
         self.container.width = width;
@@ -157,26 +159,30 @@ export const SceneStore = types
           self.basic.isNight ? ($colors.nightFog as any) : ($colors.dayFog as any),
           self.fog.nearPlane, self.fog.farPlane
         );
-        if (!Array.isArray(seaRef.mesh.material)) {
-          seaRef.mesh.material.setValues({
-            color: $colors.sea
-          } as any);
+        if (self.objects.seaRef
+          && self.objects.skyRef
+          && self.objects.airPlaneRef) {
+          if (!Array.isArray(self.objects.seaRef.mesh.material)) {
+            self.objects.seaRef.mesh.material.setValues({
+              color: $colors.sea
+            } as any);
+          }
+          self.objects.skyRef.updateColors($colors);
+          self.objects.airPlaneRef.updateColors($colors);
         }
-        skyRef.updateColors($colors);
-        airPlaneRef.updateColors($colors);
       },
       addSea(sea: ISeaStore) {
-        seaRef = sea;
+        self.objects.seaRef = sea;
         sea.mesh.position.y = -600;
         self.scene.add(sea.mesh);
       },
       addSky(sky: ISkyStore) {
-        skyRef = sky;
+        self.objects.skyRef = sky;
         sky.mesh.position.y = -600;
         self.scene.add(sky.mesh);
       },
       addAirPlane(airPlane: IAirPlaneStore) {
-        airPlaneRef = airPlane;
+        self.objects.airPlaneRef = airPlane;
         airPlane.mesh.scale.set(.25, .25, .25);
         airPlane.mesh.position.y = 100;
         self.scene.add(airPlane.mesh);
@@ -184,12 +190,16 @@ export const SceneStore = types
       loop() {
         (function innerLoop() {
           if (window && window.requestAnimationFrame) {
-            if (seaRef && skyRef && airPlaneRef) {
-              seaRef.moveWaves(self.basic.SeaRotationSpeed);
-              skyRef.mesh.rotation.z += self.basic.SkyRotationSpeed;
-              airPlaneRef.mesh.position.x = normalize(self.standardMousePosition.x, -1, 1, -100, 100);
-              airPlaneRef.mesh.position.y = normalize(self.standardMousePosition.y, -1, 1, 25, 175);
-              airPlaneRef.propeller.rotation.x += self.basic.AirPlanePropellerRotationSpeed;
+            if (self.objects.seaRef
+              && self.objects.skyRef
+              && self.objects.airPlaneRef) {
+              const targetY = normalize(self.standardMousePosition.y, -.75, .75, 25, 175);
+              self.objects.seaRef.moveWaves(self.basic.SeaRotationSpeed);
+              self.objects.skyRef.mesh.rotation.z += self.basic.SkyRotationSpeed;
+              self.objects.airPlaneRef.mesh.position.y += (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.1;
+              self.objects.airPlaneRef.mesh.rotation.z = (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.0128;
+              self.objects.airPlaneRef.mesh.rotation.x = (self.objects.airPlaneRef.mesh.position.y - targetY) * 0.0064;
+              self.objects.airPlaneRef.propeller.rotation.x += self.basic.AirPlanePropellerRotationSpeed;
             }
             self.renderer.render(self.scene, self.cameraRef);
             window.requestAnimationFrame(innerLoop);

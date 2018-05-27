@@ -42,12 +42,12 @@ export const AirPlaneStore = types
       flatShading: true
     });
     const tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
-    tailPlane.position.set(-35, 25, 0);
+    tailPlane.position.set(-40, 20, 0);
     tailPlane.castShadow = true;
     tailPlane.receiveShadow = true;
     mesh.add(tailPlane);
 
-    const geomSideWing = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
+    const geomSideWing = new THREE.BoxGeometry(30, 5, 120, 1, 1, 1);
     const matSideWing = new THREE.MeshPhongMaterial({
       color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeBody,
       flatShading: true
@@ -58,6 +58,14 @@ export const AirPlaneStore = types
     mesh.add(sideWing);
 
     const geomPropeller = new THREE.BoxGeometry(20, 10, 10, 1, 1, 1);
+    geomPropeller.vertices[ 4 ].y -= 5;
+    geomPropeller.vertices[ 4 ].z += 5;
+    geomPropeller.vertices[ 5 ].y -= 5;
+    geomPropeller.vertices[ 5 ].z -= 5;
+    geomPropeller.vertices[ 6 ].y += 5;
+    geomPropeller.vertices[ 6 ].z += 5;
+    geomPropeller.vertices[ 7 ].y += 5;
+    geomPropeller.vertices[ 7 ].z -= 5;
     const matPropeller = new THREE.MeshPhongMaterial({
       color: getEnv<{ $colors: IColorsStore }>(self).$colors.planePropeller,
       flatShading: true
@@ -66,7 +74,7 @@ export const AirPlaneStore = types
     propeller.castShadow = true;
     propeller.receiveShadow = true;
 
-    const geomBlade = new THREE.BoxGeometry(1, 100, 20, 1, 1, 1);
+    const geomBlade = new THREE.BoxGeometry(1, 80, 10, 1, 1, 1);
     const matBlade = new THREE.MeshPhongMaterial({
       color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeBlade,
       flatShading: true

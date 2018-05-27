@@ -25,12 +25,16 @@ export default class Panel extends React.Component<IPanelProps> {
     left: 20
   };
 
+  @observable
+  opacity = 0.6;
+
   @computed
   get panelStyle() {
     return {
       ...this.panelFixedStyle,
       top: this.panelFixedStyle.top + 'px',
-      left: this.panelFixedStyle.left + 'px'
+      left: this.panelFixedStyle.left + 'px',
+      opacity: this.opacity
     };
   }
 
