@@ -33,6 +33,12 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
         height: 800,
         radiusSegments: 40,
         heightSegments: 10
+      },
+      waves: {
+        baseAmp: 12.5,
+        deltaAmp: 7.5,
+        baseSpeed: 0.014,
+        deltaSpeed: 0.008
       }
     }, { $colors });
     $scene!.addSea(sea);

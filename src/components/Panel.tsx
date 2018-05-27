@@ -1,10 +1,14 @@
-import { Collapse, Input, InputNumber } from 'antd';
+import { Collapse, Input, InputNumber, Select } from 'antd';
 import { action, computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
+import { applySnapshot } from 'mobx-state-tree';
 import React, { SyntheticEvent } from 'react';
+import { autumn, summer } from '../stores';
 import { IColorsStore } from '../stores/Colors';
 import { ISceneStore } from '../stores/Scene';
 import styles from './Panel.less';
+
+const Option = Select.Option;
 
 interface IPanelProps {
   $colors?: IColorsStore;
@@ -78,6 +82,18 @@ export default class Panel extends React.Component<IPanelProps> {
         y: $scene!.camera.position.y,
         z: val
       });
+    }
+  }
+
+  handleChangeColorsConfig = (val: any, option: any) => {
+    const { $colors } = this.props;
+    switch (val) {
+      case 'summer':
+        applySnapshot($colors!, summer);
+        break;
+      case 'autumn':
+        applySnapshot($colors!, autumn);
+        break;
     }
   }
 
@@ -163,6 +179,15 @@ export default class Panel extends React.Component<IPanelProps> {
             <div className={ styles.colorsList }>
               { this.ColorsList }
             </div>
+            <Select
+              size={ 'small' }
+              defaultValue='summer'
+              style={ { marginTop: '1rem' } }
+              onChange={ this.handleChangeColorsConfig }
+            >
+              <Option value='summer'>Summer</Option>
+              <Option value='autumn'>Autumn</Option>
+            </Select>
           </Collapse.Panel>
           <Collapse.Panel key={ 'scene' } header={ 'Scene' }>
             { this.Scene }

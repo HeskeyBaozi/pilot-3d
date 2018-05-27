@@ -7,7 +7,15 @@ export const AirPlaneStore = types
   .volatile((self) => {
     const mesh = new THREE.Object3D();
 
-    const geomCockpit = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
+    const geomCockpit = new THREE.BoxGeometry(80, 50, 50, 1, 1, 1);
+    geomCockpit.vertices[ 4 ].y -= 10;
+    geomCockpit.vertices[ 4 ].z += 20;
+    geomCockpit.vertices[ 5 ].y -= 10;
+    geomCockpit.vertices[ 5 ].z -= 20;
+    geomCockpit.vertices[ 6 ].y += 30;
+    geomCockpit.vertices[ 6 ].z += 20;
+    geomCockpit.vertices[ 7 ].y += 30;
+    geomCockpit.vertices[ 7 ].z -= 20;
     const matCockpit = new THREE.MeshPhongMaterial({
       color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeBody,
       flatShading: true

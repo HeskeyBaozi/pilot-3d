@@ -2,7 +2,7 @@ import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
 import { IAirPlaneStore } from './AirPlane';
 import { IColorsSnapShot, IColorsStore } from './Colors';
-import { ISeaStore } from './Sea';
+import { ISeaStore, isGeom } from './Sea';
 import { ISkyStore } from './Sky';
 
 export const SceneStore = types
@@ -100,6 +100,8 @@ export const SceneStore = types
       self.lights.hemisphere.intensity
     );
 
+    const ambientLight = new THREE.AmbientLight('#fff', .2);
+
     const shadowLight = new THREE.DirectionalLight(
       self.lights.directional.color,
       self.lights.directional.intensity
@@ -123,6 +125,7 @@ export const SceneStore = types
 
     scene.add(hemisphereLight);
     scene.add(shadowLight);
+    scene.add(ambientLight);
 
     return {
       cameraRef, renderer, scene
@@ -182,7 +185,7 @@ export const SceneStore = types
         (function innerLoop() {
           if (window && window.requestAnimationFrame) {
             if (seaRef && skyRef && airPlaneRef) {
-              seaRef.mesh.rotation.z += self.basic.SeaRotationSpeed;
+              seaRef.moveWaves(self.basic.SeaRotationSpeed);
               skyRef.mesh.rotation.z += self.basic.SkyRotationSpeed;
               airPlaneRef.mesh.position.x = normalize(self.standardMousePosition.x, -1, 1, -100, 100);
               airPlaneRef.mesh.position.y = normalize(self.standardMousePosition.y, -1, 1, 25, 175);
