@@ -1,7 +1,7 @@
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { onAction, onSnapshot } from 'mobx-state-tree';
-import React, { MouseEventHandler, WheelEventHandler } from 'react';
+import React, { KeyboardEventHandler, MouseEventHandler, WheelEventHandler } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import * as THREE from 'three';
 import { AirPlaneStore } from '../stores/AirPlane';
@@ -25,6 +25,7 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
 
   componentDidMount() {
     const { $colors, $scene } = this.props;
+    window.onkeydown = this.handleKeyDown;
     $scene!.updateSize(this.containerRef.current!.offsetWidth, this.containerRef.current!.offsetHeight);
     const sea = SeaStore.create({
       geometry: {
@@ -43,11 +44,11 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
     }, { $colors });
     $scene!.addSea(sea);
     const sky = SkyStore.create({
-      nClouds: 20,
-      baseHeight: 850,
+      nClouds: 30,
+      baseHeight: 950,
       deltaHeight: 100,
-      baseDepth: -200,
-      deltaDepth: 200
+      baseDepth: 0,
+      deltaDepth: 400
     }, { $colors });
     $scene!.addSky(sky);
     const airPlane = AirPlaneStore.create({}, { $colors });
@@ -62,6 +63,7 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
   componentWillUnmount() {
     const { $scene } = this.props;
     $scene!.renderer.clear();
+    window.onkeydown = null;
     this.containerRef.current!.removeChild($scene!.renderer.domElement);
   }
 
@@ -89,6 +91,13 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
   handleWheel: WheelEventHandler<HTMLDivElement> = (e) => {
     const { $scene } = this.props;
     $scene!.updateCameraFov(e.deltaY);
+  }
+
+  handleKeyDown = (e: any) => {
+    if (e.keyCode === 32) {
+      const { $scene } = this.props;
+      $scene!.toggleFPS();
+    }
   }
 
   render() {

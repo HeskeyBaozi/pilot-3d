@@ -66,6 +66,7 @@ export const stores = {
     },
     basic: {
       isNight: false,
+      isFPS: false,
       SeaRotationSpeed: 0.005,
       SkyRotationSpeed: 0.01,
       AirPlanePropellerRotationSpeed: 0.3

@@ -1,5 +1,5 @@
 import * as TWEEN from '@tweenjs/tween.js';
-import { getEnv, types } from 'mobx-state-tree';
+import { applyAction, getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
 import { IAirPlaneStore } from './AirPlane';
 import { IColorsSnapShot, IColorsStore } from './Colors';
@@ -44,6 +44,7 @@ export const SceneStore = types
     }),
     basic: types.model('Basic', {
       isNight: types.boolean,
+      isFPS: types.boolean,
       SeaRotationSpeed: types.number,
       SkyRotationSpeed: types.number,
       AirPlanePropellerRotationSpeed: types.number
@@ -182,6 +183,54 @@ export const SceneStore = types
           self.objects.airPlaneRef.updateColors($colors);
         }
       },
+      toggleFPS() {
+        self.basic.isFPS = !self.basic.isFPS;
+        if (self.basic.isFPS) {
+          new TWEEN.Tween({ x: self.objects.airPlaneRef!.mesh.position.x })
+            .to({ x: 0 }, 200)
+            .onUpdate(({ x }) => {
+              self.objects.airPlaneRef!.mesh.position.x = x;
+            })
+            .start();
+          new TWEEN.Tween(self.cameraRef.position)
+            .to({ x: -150, y: 100, z: 0 }, 500)
+            .onUpdate(({ x, y, z }) => {
+              applyAction(self, {
+                name: 'updateCameraPosition',
+                args: [ { x, y, z } ]
+              });
+            })
+            .start();
+          new TWEEN.Tween(self.cameraRef.rotation)
+            .to({ y: -Math.PI / 2 }, 500)
+            .onUpdate(({ x, y, z }) => {
+              self.cameraRef.rotation.set(x, y, z);
+            })
+            .start();
+        } else {
+          new TWEEN.Tween({ z: self.objects.airPlaneRef!.mesh.position.z })
+            .to({ z: 0 }, 200)
+            .onUpdate(({ z }) => {
+              self.objects.airPlaneRef!.mesh.position.z = z;
+            })
+            .start();
+          new TWEEN.Tween(self.cameraRef.position)
+            .to({ x: 0, y: 100, z: 200 }, 500)
+            .onUpdate(({ x, y, z }) => {
+              applyAction(self, {
+                name: 'updateCameraPosition',
+                args: [ { x, y, z } ]
+              });
+            })
+            .start();
+          new TWEEN.Tween(self.cameraRef.rotation)
+            .to({ y: 0 }, 500)
+            .onUpdate(({ x, y, z }) => {
+              self.cameraRef.rotation.set(x, y, z);
+            })
+            .start();
+        }
+      },
       addSea(sea: ISeaStore) {
         self.objects.seaRef = sea;
         sea.mesh.position.y = -600;
@@ -204,14 +253,28 @@ export const SceneStore = types
             if (self.objects.seaRef
               && self.objects.skyRef
               && self.objects.airPlaneRef) {
-              const targetY = normalize(self.standardMousePosition.y, -1, 1, 25, 175);
-              const targetX = normalize(self.standardMousePosition.x, -1, 1, -150, 150);
+
               self.objects.seaRef.moveWaves(self.basic.SeaRotationSpeed);
               self.objects.skyRef.mesh.rotation.z += self.basic.SkyRotationSpeed;
-              self.objects.airPlaneRef.mesh.position.x += (targetX - self.objects.airPlaneRef.mesh.position.x) * 0.1;
-              self.objects.airPlaneRef.mesh.position.y += (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.1;
-              self.objects.airPlaneRef.mesh.rotation.z = (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.0128;
-              self.objects.airPlaneRef.mesh.rotation.x = (self.objects.airPlaneRef.mesh.position.y - targetY) * 0.0064;
+              if (!self.basic.isFPS) {
+                const targetY = normalize(self.standardMousePosition.y, -1, 1, 25, 175);
+                const targetX = normalize(self.standardMousePosition.x, -1, 1, -150, 150);
+                self.objects.airPlaneRef.mesh.position.x += (targetX - self.objects.airPlaneRef.mesh.position.x) * 0.1;
+                self.objects.airPlaneRef.mesh.position.y += (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.1;
+                self.objects.airPlaneRef.mesh.rotation.z
+                  = (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.0128;
+                self.objects.airPlaneRef.mesh.rotation.x
+                  = (self.objects.airPlaneRef.mesh.position.y - targetY) * 0.0064;
+              } else {
+                const targetY = normalize(self.standardMousePosition.y, -1, 1, 25, 150);
+                const targetZ = normalize(self.standardMousePosition.x, -1, 1, -150, 150);
+                self.objects.airPlaneRef.mesh.position.z += (targetZ - self.objects.airPlaneRef.mesh.position.z) * 0.1;
+                self.objects.airPlaneRef.mesh.position.y += (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.1;
+                self.objects.airPlaneRef.mesh.rotation.z
+                  = (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.0128;
+                self.objects.airPlaneRef.mesh.rotation.x
+                  = (self.objects.airPlaneRef.mesh.position.y - targetY) * 0.0064;
+              }
               self.objects.airPlaneRef.propeller.rotation.x += self.basic.AirPlanePropellerRotationSpeed;
             }
             self.renderer.render(self.scene, self.cameraRef);

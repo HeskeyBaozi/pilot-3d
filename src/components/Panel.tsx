@@ -1,4 +1,4 @@
-import { Collapse, Input, InputNumber, Select } from 'antd';
+import { Collapse, InputNumber, Select, Slider, Switch } from 'antd';
 import { action, computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { applySnapshot } from 'mobx-state-tree';
@@ -26,7 +26,7 @@ export default class Panel extends React.Component<IPanelProps> {
   };
 
   @observable
-  opacity = 0.6;
+  opacity = 50;
 
   @computed
   get panelStyle() {
@@ -34,7 +34,7 @@ export default class Panel extends React.Component<IPanelProps> {
       ...this.panelFixedStyle,
       top: this.panelFixedStyle.top + 'px',
       left: this.panelFixedStyle.left + 'px',
-      opacity: this.opacity
+      opacity: this.opacity / 100
     };
   }
 
@@ -101,6 +101,11 @@ export default class Panel extends React.Component<IPanelProps> {
     }
   }
 
+  @action
+  handleOpacitySliderChange = (val: any) => {
+    this.opacity = val;
+  }
+
   @computed
   get ColorsList() {
     return this.props.$colors!.list.map(({ name, value }) => {
@@ -118,7 +123,7 @@ export default class Panel extends React.Component<IPanelProps> {
     const { $scene } = this.props;
     return (
       <div>
-        <p>Camera</p>
+        <span>Camera</span>
         <div className={ styles.list }>
           <span>Position</span>
           <span>X</span>
@@ -145,6 +150,11 @@ export default class Panel extends React.Component<IPanelProps> {
             value={ $scene!.camera.position.z }
             onChange={ this.handleCameraPositionZChange }
           />
+        </div>
+        <span>View</span>
+        <div className={ styles.list }>
+          <span style={ { marginRight: '1rem' } }>Horizontal View (Press Space)</span>
+          <Switch checked={ $scene!.basic.isFPS }/>
         </div>
       </div>
     );
@@ -178,6 +188,15 @@ export default class Panel extends React.Component<IPanelProps> {
                 onChange={ this.handlePanelLeftChange }
               />
             </span>
+            <div>
+              <span>Opacity</span>
+              <Slider
+                min={ 10 }
+                max={ 100 }
+                value={ this.opacity }
+                onChange={ this.handleOpacitySliderChange }
+              />
+            </div>
           </Collapse.Panel>
           <Collapse.Panel key={ 'colors' } header={ 'Colors' }>
             <div className={ styles.colorsList }>
