@@ -46,6 +46,12 @@ export const SceneStore = types
       SeaRotationSpeed: types.number,
       SkyRotationSpeed: types.number,
       AirPlanePropellerRotationSpeed: types.number
+    }),
+    mouse: types.model('Mouse', {
+      position: types.model({
+        x: types.number,
+        y: types.number
+      })
     })
   })
   .views((self) => ({
@@ -53,6 +59,15 @@ export const SceneStore = types
       if (self.container.width && self.container.height) {
         return self.container.width / self.container.height;
       }
+    },
+    get standardMousePosition() {
+      if (self.container.width && self.container.height) {
+        return {
+          x: -1 + (self.mouse.position.x / self.container.width) * 2,
+          y: 1 - (self.mouse.position.y / self.container.height) * 2
+        };
+      }
+      return { x: -1, y: 1 };
     }
   }))
   .volatile((self) => {
@@ -126,6 +141,10 @@ export const SceneStore = types
         self.cameraRef.aspect = width / height;
         self.cameraRef.updateProjectionMatrix();
       },
+      updateMousePosition({ x, y }: { x: number, y: number }) {
+        self.mouse.position.x = x;
+        self.mouse.position.y = y;
+      },
       updateCameraPosition({ x, y, z }: { x: number, y: number, z: number }) {
         self.camera.position = { x, y, z };
         self.cameraRef.position.set(x, y, z);
@@ -152,6 +171,8 @@ export const SceneStore = types
             if (seaRef && skyRef && airPlaneRef) {
               seaRef.mesh.rotation.z += self.basic.SeaRotationSpeed;
               skyRef.mesh.rotation.z += self.basic.SkyRotationSpeed;
+              airPlaneRef.mesh.position.x = normalize(self.standardMousePosition.x, -1, 1, -100, 100);
+              airPlaneRef.mesh.position.y = normalize(self.standardMousePosition.y, -1, 1, 25, 175);
               airPlaneRef.propeller.rotation.x += self.basic.AirPlanePropellerRotationSpeed;
             }
             self.renderer.render(self.scene, self.cameraRef);
@@ -161,6 +182,14 @@ export const SceneStore = types
       }
     };
   });
+
+function normalize(v: number, vmin: number, vmax: number, tmin: number, tmax: number) {
+  const nv = Math.max(Math.min(v, vmax), vmin);
+  const dv = vmax - vmin;
+  const pc = (nv - vmin) / dv;
+  const dt = tmax - tmin;
+  return tmin + (pc * dt);
+}
 
 type SceneStoreType = typeof SceneStore.Type;
 

@@ -51,6 +51,9 @@ export const stores = {
       SeaRotationSpeed: 0.005,
       SkyRotationSpeed: 0.01,
       AirPlanePropellerRotationSpeed: 0.3
+    },
+    mouse: {
+      position: { x: 0, y: 0 }
     }
   }, { $colors })
 };
