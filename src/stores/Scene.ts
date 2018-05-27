@@ -1,7 +1,9 @@
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
+import { IAirPlaneStore } from './AirPlane';
 import { IColorsStore } from './Colors';
 import { ISeaStore } from './Sea';
+import { ISkyStore } from './Sky';
 
 export const SceneStore = types
   .model('Scene', {
@@ -41,7 +43,9 @@ export const SceneStore = types
     }),
     basic: types.model('Basic', {
       isNight: types.boolean,
-      SeaRotationSpeed: types.number
+      SeaRotationSpeed: types.number,
+      SkyRotationSpeed: types.number,
+      AirPlanePropellerRotationSpeed: types.number
     })
   })
   .views((self) => ({
@@ -111,6 +115,8 @@ export const SceneStore = types
   })
   .actions((self) => {
     let seaRef: ISeaStore;
+    let skyRef: ISkyStore;
+    let airPlaneRef: IAirPlaneStore;
 
     return {
       updateSize(width: number, height: number) {
@@ -129,11 +135,24 @@ export const SceneStore = types
         sea.mesh.position.y = -600;
         self.scene.add(sea.mesh);
       },
+      addSky(sky: ISkyStore) {
+        skyRef = sky;
+        sky.mesh.position.y = -600;
+        self.scene.add(sky.mesh);
+      },
+      addAirPlane(airPlane: IAirPlaneStore) {
+        airPlaneRef = airPlane;
+        airPlane.mesh.scale.set(.25, .25, .25);
+        airPlane.mesh.position.y = 100;
+        self.scene.add(airPlane.mesh);
+      },
       loop() {
         (function innerLoop() {
           if (window && window.requestAnimationFrame) {
-            if (seaRef) {
+            if (seaRef && skyRef && airPlaneRef) {
               seaRef.mesh.rotation.z += self.basic.SeaRotationSpeed;
+              skyRef.mesh.rotation.z += self.basic.SkyRotationSpeed;
+              airPlaneRef.propeller.rotation.x += self.basic.AirPlanePropellerRotationSpeed;
             }
             self.renderer.render(self.scene, self.cameraRef);
             window.requestAnimationFrame(innerLoop);

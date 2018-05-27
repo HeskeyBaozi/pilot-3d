@@ -1,5 +1,6 @@
-import { types } from 'mobx-state-tree';
+import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
+import { IColorsStore } from './Colors';
 
 export const SeaStore = types
   .model('Sea', {
@@ -21,6 +22,7 @@ export const SeaStore = types
     );
     geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
     const mat = new THREE.MeshPhongMaterial({
+      color: getEnv<{ $colors: IColorsStore }>(self as any).$colors.sea,
       transparent: true,
       opacity: .6,
       flatShading: true

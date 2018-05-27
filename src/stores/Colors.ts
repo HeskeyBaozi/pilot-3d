@@ -2,12 +2,13 @@ import { types } from 'mobx-state-tree';
 
 export const ColorsStore = types
   .model('Colors', {
-    red: types.string,
-    white: types.string,
+    planeCockPit: types.string,
+    cloud: types.string,
+    planeEngine: types.string,
     brown: types.string,
     pink: types.string,
     brownDark: types.string,
-    blue: types.string,
+    sea: types.string,
     day1: types.string,
     day2: types.string,
     dayFog: types.string,

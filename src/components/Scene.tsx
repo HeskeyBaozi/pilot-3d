@@ -1,12 +1,14 @@
-import { computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { onAction, onPatch, onSnapshot } from 'mobx-state-tree';
+import { onAction, onSnapshot } from 'mobx-state-tree';
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import * as THREE from 'three';
+import { AirPlaneStore } from '../stores/AirPlane';
 import { IColorsStore } from '../stores/Colors';
-import { ISceneStore, SceneStore } from '../stores/Scene';
+import { ISceneStore } from '../stores/Scene';
 import { SeaStore } from '../stores/Sea';
+import { SkyStore } from '../stores/Sky';
 import styles from './Scene.less';
 
 interface IPilotSceneProps {
@@ -32,14 +34,29 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
         radiusSegments: 40,
         heightSegments: 10
       }
-    });
+    }, { $colors });
     $scene!.addSea(sea);
+    const sky = SkyStore.create({
+      nClouds: 20,
+      baseHeight: 850,
+      deltaHeight: 100,
+      baseDepth: -200,
+      deltaDepth: 200
+    }, { $colors });
+    $scene!.addSky(sky);
+    const airPlane = AirPlaneStore.create({}, { $colors });
+    $scene!.addAirPlane(airPlane);
     onSnapshot($colors!, ({ dayFog, nightFog }) => {
       $scene!.scene.fog = new THREE.Fog(
         $scene!.basic.isNight ? nightFog : dayFog,
         $scene!.fog.nearPlane,
         $scene!.fog.farPlane
       );
+      if (!Array.isArray(sea.mesh.material)) {
+        sea.mesh.material.setValues({
+          color: $colors!.sea
+        } as any);
+      }
     });
     onAction($scene!, ({ name, args }) => {
       switch (name) {

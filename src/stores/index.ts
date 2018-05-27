@@ -2,15 +2,16 @@ import { ColorsStore } from './Colors';
 import { SceneStore } from './Scene';
 
 const $colors = ColorsStore.create({
-  red: '#f25346',
-  white: '#d8d0d1',
+  planeCockPit: '#f25346',
+  cloud: '#d8d0d1',
+  planeEngine: '#d8d0d1',
   brown: '#59332e',
   pink: '#F5986E',
   brownDark: '#23190f',
-  blue: '#68c3c0',
+  sea: '#68c3c0',
   day1: '#e4e0ba',
   day2: '#f7d9aa',
-  dayFog: '#5c5c5c',
+  dayFog: '#f7d9aa',
   night1: '#a683d8',
   night2: '#62a8e1',
   nightFog: '#ffffff'
@@ -47,7 +48,9 @@ export const stores = {
     },
     basic: {
       isNight: false,
-      SeaRotationSpeed: 0.005
+      SeaRotationSpeed: 0.005,
+      SkyRotationSpeed: 0.01,
+      AirPlanePropellerRotationSpeed: 0.3
     }
   }, { $colors })
 };
