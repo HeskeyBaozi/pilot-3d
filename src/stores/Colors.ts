@@ -2,12 +2,12 @@ import { types } from 'mobx-state-tree';
 
 export const ColorsStore = types
   .model('Colors', {
-    planeCockPit: types.string,
+    planeBody: types.string,
     cloud: types.string,
     planeEngine: types.string,
-    brown: types.string,
+    planePropeller: types.string,
     pink: types.string,
-    brownDark: types.string,
+    planeBlade: types.string,
     sea: types.string,
     day1: types.string,
     day2: types.string,
@@ -34,5 +34,10 @@ export const ColorsStore = types
 
 type ColorsStoreType = typeof ColorsStore.Type;
 
+type ColorsSnapShotType = typeof ColorsStore.SnapshotType;
+
 export interface IColorsStore extends ColorsStoreType {
+}
+
+export interface IColorsSnapShot extends ColorsSnapShotType {
 }

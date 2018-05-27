@@ -1,7 +1,7 @@
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
-import { CloudStore } from './Cloud';
-import { IColorsStore } from './Colors';
+import { CloudStore, ICloudStore } from './Cloud';
+import { IColorsSnapShot, IColorsStore } from './Colors';
 
 export const SkyStore = types
   .model('Sky', {
@@ -18,6 +18,7 @@ export const SkyStore = types
   }))
   .volatile((self) => {
     const mesh = new THREE.Object3D();
+    const clouds: ICloudStore[] = [];
     for (let i = 0; i < self.nClouds; i++) {
       const c = CloudStore.create({
         geometry: { size: 20 }
@@ -35,12 +36,20 @@ export const SkyStore = types
 
       const s = 1 + Math.random() * 2;
       c.mesh.scale.set(s, s, s);
-      mesh.add(c.mesh);
+      clouds.push(c);
     }
+    mesh.add(...clouds.map((store) => store.mesh));
     return {
-      mesh
+      mesh, clouds
     };
-  });
+  })
+  .actions((self) => ({
+    updateColors($colors: IColorsSnapShot) {
+      self.clouds.forEach((cloud) => {
+        cloud.updateColors($colors);
+      });
+    }
+  }));
 
 type SkyStoreType = typeof SkyStore.Type;
 

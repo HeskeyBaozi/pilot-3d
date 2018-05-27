@@ -2,12 +2,12 @@ import { ColorsStore } from './Colors';
 import { SceneStore } from './Scene';
 
 const $colors = ColorsStore.create({
-  planeCockPit: '#f25346',
+  planeBody: '#f25346',
   cloud: '#d8d0d1',
   planeEngine: '#d8d0d1',
-  brown: '#59332e',
+  planePropeller: '#59332e',
   pink: '#F5986E',
-  brownDark: '#23190f',
+  planeBlade: '#23190f',
   sea: '#68c3c0',
   day1: '#e4e0ba',
   day2: '#f7d9aa',

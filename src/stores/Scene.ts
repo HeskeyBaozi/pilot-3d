@@ -1,7 +1,7 @@
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
 import { IAirPlaneStore } from './AirPlane';
-import { IColorsStore } from './Colors';
+import { IColorsSnapShot, IColorsStore } from './Colors';
 import { ISeaStore } from './Sea';
 import { ISkyStore } from './Sky';
 
@@ -148,6 +148,19 @@ export const SceneStore = types
       updateCameraPosition({ x, y, z }: { x: number, y: number, z: number }) {
         self.camera.position = { x, y, z };
         self.cameraRef.position.set(x, y, z);
+      },
+      updateColors($colors: IColorsSnapShot) {
+        self.scene.fog = new THREE.Fog(
+          self.basic.isNight ? ($colors.nightFog as any) : ($colors.dayFog as any),
+          self.fog.nearPlane, self.fog.farPlane
+        );
+        if (!Array.isArray(seaRef.mesh.material)) {
+          seaRef.mesh.material.setValues({
+            color: $colors.sea
+          } as any);
+        }
+        skyRef.updateColors($colors);
+        airPlaneRef.updateColors($colors);
       },
       addSea(sea: ISeaStore) {
         seaRef = sea;

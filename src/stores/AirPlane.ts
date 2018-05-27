@@ -1,6 +1,6 @@
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
-import { IColorsStore } from './Colors';
+import { IColorsSnapShot, IColorsStore } from './Colors';
 
 export const AirPlaneStore = types
   .model('AirPlane', {})
@@ -9,7 +9,7 @@ export const AirPlaneStore = types
 
     const geomCockpit = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
     const matCockpit = new THREE.MeshPhongMaterial({
-      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeCockPit,
+      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeBody,
       flatShading: true
     });
     const cockpit = new THREE.Mesh(geomCockpit, matCockpit);
@@ -30,7 +30,7 @@ export const AirPlaneStore = types
 
     const geomTailPlane = new THREE.BoxGeometry(15, 20, 5, 1, 1, 1);
     const matTailPlane = new THREE.MeshPhongMaterial({
-      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeCockPit,
+      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeBody,
       flatShading: true
     });
     const tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
@@ -41,7 +41,7 @@ export const AirPlaneStore = types
 
     const geomSideWing = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
     const matSideWing = new THREE.MeshPhongMaterial({
-      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeCockPit,
+      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeBody,
       flatShading: true
     });
     const sideWing = new THREE.Mesh(geomSideWing, matSideWing);
@@ -51,7 +51,7 @@ export const AirPlaneStore = types
 
     const geomPropeller = new THREE.BoxGeometry(20, 10, 10, 1, 1, 1);
     const matPropeller = new THREE.MeshPhongMaterial({
-      color: getEnv<{ $colors: IColorsStore }>(self).$colors.brown,
+      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planePropeller,
       flatShading: true
     });
     const propeller = new THREE.Mesh(geomPropeller, matPropeller);
@@ -60,7 +60,7 @@ export const AirPlaneStore = types
 
     const geomBlade = new THREE.BoxGeometry(1, 100, 20, 1, 1, 1);
     const matBlade = new THREE.MeshPhongMaterial({
-      color: getEnv<{ $colors: IColorsStore }>(self).$colors.brownDark,
+      color: getEnv<{ $colors: IColorsStore }>(self).$colors.planeBlade,
       flatShading: true
     });
     const blade = new THREE.Mesh(geomBlade, matBlade);
@@ -72,9 +72,48 @@ export const AirPlaneStore = types
     mesh.add(propeller);
     return {
       mesh,
-      propeller
+      propeller,
+      cockpit,
+      engine,
+      tailPlane,
+      sideWing,
+      blade
     };
-  });
+  })
+  .actions((self) => ({
+    updateColors($colors: IColorsSnapShot) {
+      if (!Array.isArray(self.cockpit.material)) {
+        self.cockpit.material.setValues({
+          color: $colors.planeBody
+        } as any);
+      }
+      if (!Array.isArray(self.tailPlane.material)) {
+        self.tailPlane.material.setValues({
+          color: $colors.planeBody
+        } as any);
+      }
+      if (!Array.isArray(self.sideWing.material)) {
+        self.sideWing.material.setValues({
+          color: $colors.planeBody
+        } as any);
+      }
+      if (!Array.isArray(self.engine.material)) {
+        self.engine.material.setValues({
+          color: $colors.planeEngine
+        } as any);
+      }
+      if (!Array.isArray(self.propeller.material)) {
+        self.propeller.material.setValues({
+          color: $colors.planePropeller
+        } as any);
+      }
+      if (!Array.isArray(self.blade.material)) {
+        self.blade.material.setValues({
+          color: $colors.planeBlade
+        } as any);
+      }
+    }
+  }));
 
 type AirPlaneType = typeof AirPlaneStore.Type;
 

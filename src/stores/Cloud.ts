@@ -1,6 +1,6 @@
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
-import { IColorsStore } from './Colors';
+import { IColorsSnapShot, IColorsStore } from './Colors';
 
 export const CloudStore = types
   .model('Cloud', {
@@ -22,6 +22,8 @@ export const CloudStore = types
     });
 
     const nBlocs = 3 + Math.floor(Math.random() * 3);
+
+    const cloud: THREE.Mesh[] = [];
     for (let i = 0; i < nBlocs; i++) {
       const m = new THREE.Mesh(geom, mat);
       m.position.x = i * 15;
@@ -34,13 +36,24 @@ export const CloudStore = types
       m.scale.set(s, s, s);
       m.castShadow = true;
       m.receiveShadow = true;
-
-      mesh.add(m);
+      cloud.push(m);
     }
+    mesh.add(...cloud);
     return {
-      mesh
+      mesh, cloud
     };
-  });
+  })
+  .actions((self) => ({
+    updateColors($colors: IColorsSnapShot) {
+      self.cloud.forEach((cloudBox) => {
+        if (!Array.isArray(cloudBox.material)) {
+          cloudBox.material.setValues({
+            color: $colors.cloud
+          } as any);
+        }
+      });
+    }
+  }));
 
 type CloudStoreType = typeof CloudStore.Type;
 
