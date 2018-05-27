@@ -204,9 +204,11 @@ export const SceneStore = types
             if (self.objects.seaRef
               && self.objects.skyRef
               && self.objects.airPlaneRef) {
-              const targetY = normalize(self.standardMousePosition.y, -.75, .75, 25, 175);
+              const targetY = normalize(self.standardMousePosition.y, -1, 1, 25, 175);
+              const targetX = normalize(self.standardMousePosition.x, -1, 1, -150, 150);
               self.objects.seaRef.moveWaves(self.basic.SeaRotationSpeed);
               self.objects.skyRef.mesh.rotation.z += self.basic.SkyRotationSpeed;
+              self.objects.airPlaneRef.mesh.position.x += (targetX - self.objects.airPlaneRef.mesh.position.x) * 0.1;
               self.objects.airPlaneRef.mesh.position.y += (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.1;
               self.objects.airPlaneRef.mesh.rotation.z = (targetY - self.objects.airPlaneRef.mesh.position.y) * 0.0128;
               self.objects.airPlaneRef.mesh.rotation.x = (self.objects.airPlaneRef.mesh.position.y - targetY) * 0.0064;
