@@ -9,12 +9,11 @@ export const summer: IColorsSnapShot = {
   pink: '#F5986E',
   planeBlade: '#23190f',
   sea: '#be9a32',
-  day1: '#e5f2e5',
-  day2: '#62c2b5',
-  dayFog: '#f7d9aa',
-  night1: '#a683d8',
-  night2: '#62a8e1',
-  nightFog: '#ffffff'
+  backgroundTop: '#e5f2e5',
+  backgroundBottom: '#62c2b5',
+  fog: '#f7d9aa',
+  enemy: '#f25346',
+  coin: '#009999'
 };
 
 export const autumn: IColorsSnapShot = {
@@ -25,12 +24,11 @@ export const autumn: IColorsSnapShot = {
   pink: '#F5986E',
   planeBlade: '#23190f',
   sea: '#8DA9A5',
-  day1: '#D5D7CC',
-  day2: '#F4D5B7',
-  dayFog: '#f7d9aa',
-  night1: '#a683d8',
-  night2: '#62a8e1',
-  nightFog: '#ffffff'
+  backgroundTop: '#D5D7CC',
+  backgroundBottom: '#F4D5B7',
+  fog: '#f7d9aa',
+  enemy: '#f25346',
+  coin: '#009999'
 };
 
 const $colors = ColorsStore.create(summer);
@@ -73,6 +71,13 @@ export const stores = {
     },
     mouse: {
       position: { x: 0, y: 0 }
+    },
+    plane: {
+      collisionSpeed: { x: 0, y: 0 }
+    },
+    game: {},
+    global: {
+      deltaTime: 0
     }
   }, { $colors })
 };

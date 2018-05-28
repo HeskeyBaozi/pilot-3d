@@ -1,11 +1,12 @@
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { onAction, onSnapshot } from 'mobx-state-tree';
-import React, { KeyboardEventHandler, MouseEventHandler, WheelEventHandler } from 'react';
+import { onSnapshot } from 'mobx-state-tree';
+import React, { MouseEventHandler, WheelEventHandler } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import * as THREE from 'three';
 import { AirPlaneStore } from '../stores/AirPlane';
 import { IColorsStore } from '../stores/Colors';
+import { EnemiesHolder } from '../stores/Enemy';
 import { ISceneStore } from '../stores/Scene';
 import { SeaStore } from '../stores/Sea';
 import { SkyStore } from '../stores/Sky';
@@ -42,7 +43,6 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
         deltaSpeed: 0.008
       }
     }, { $colors });
-    $scene!.addSea(sea);
     const sky = SkyStore.create({
       nClouds: 30,
       baseHeight: 950,
@@ -50,9 +50,13 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
       baseDepth: 0,
       deltaDepth: 400
     }, { $colors });
-    $scene!.addSky(sky);
     const airPlane = AirPlaneStore.create({}, { $colors });
+    const enemiesHolder = EnemiesHolder.create({ enemiesInUse: [] }, { $colors });
+
+    $scene!.addSea(sea);
+    $scene!.addSky(sky);
     $scene!.addAirPlane(airPlane);
+    $scene!.addEnemiesHolder(enemiesHolder);
     onSnapshot($colors!, (colors) => {
       $scene!.updateColors(colors);
     });
@@ -75,9 +79,7 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
   @computed
   get containerStyle() {
     const { $colors } = this.props;
-    const image = this.$scene && this.$scene!.basic.isNight ?
-      `linear-gradient(${$colors!.night1}, ${$colors!.night2})` :
-      `linear-gradient(${$colors!.day1}, ${$colors!.day2})`;
+    const image = `linear-gradient(${$colors!.backgroundTop}, ${$colors!.backgroundBottom})`;
     return {
       backgroundImage: image
     };

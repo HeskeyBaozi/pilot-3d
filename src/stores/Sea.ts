@@ -51,7 +51,7 @@ export const SeaStore = types
     };
   })
   .actions((self) => ({
-    moveWaves(seaRotationSpeed: number) {
+    moveWaves() {
       if (isGeom(self.mesh.geometry)) {
         self.mesh.geometry.vertices.forEach((v, i) => {
           const vProps = self.wavesConfig[ i ];
@@ -61,7 +61,6 @@ export const SeaStore = types
         });
         self.mesh.geometry.verticesNeedUpdate = true;
       }
-      self.mesh.rotation.z += seaRotationSpeed;
     }
   }));
 

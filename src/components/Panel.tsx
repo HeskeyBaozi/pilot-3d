@@ -161,7 +161,7 @@ export default class Panel extends React.Component<IPanelProps> {
   }
 
   render() {
-    const {} = this.props;
+    const { $scene } = this.props;
     return (
       <div style={ this.panelStyle } key={ 'panel' } className={ styles.panel }>
         <Collapse accordion={ true }>
@@ -214,6 +214,14 @@ export default class Panel extends React.Component<IPanelProps> {
           </Collapse.Panel>
           <Collapse.Panel key={ 'scene' } header={ 'Scene' }>
             { this.Scene }
+          </Collapse.Panel>
+          <Collapse.Panel key={ 'game' } header={ 'Game' }>
+            <div>
+              <span>Distance</span>
+              <span>{ $scene!.game.distance.toFixed(3) }</span>
+              <span style={ { marginLeft: '1rem' } }>Game Speed</span>
+              <span>{ $scene!.game.speed.toFixed(3) }</span>
+            </div>
           </Collapse.Panel>
         </Collapse>
       </div>
