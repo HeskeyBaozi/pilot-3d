@@ -1,9 +1,10 @@
 import * as TWEEN from '@tweenjs/tween.js';
 import { applyAction, getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
+import { normalize } from '../utils';
 import { IAirPlaneStore } from './AirPlane';
 import { IColorsSnapShot, IColorsStore } from './Colors';
-import { EnemiesHolderType, EnemyStore, EnemyStoreType } from './Enemy';
+import { EnemiesHolderType, EnemyStoreType } from './Enemy';
 import { ISeaStore } from './Sea';
 import { ISkyStore } from './Sky';
 
@@ -15,40 +16,14 @@ export const SceneStore = types
         y: types.number,
         z: types.number
       }),
-      fieldOfView: types.number,
-      nearPlane: types.number,
-      farPlane: types.number
+      fieldOfView: types.number
     }),
     container: types.model('ContainerConfig', {
       width: types.maybe(types.number),
       height: types.maybe(types.number)
     }),
-    fog: types.model('Fog', {
-      nearPlane: types.number,
-      farPlane: types.number
-    }),
-    lights: types.model('Lights', {
-      hemisphere: types.model('Hemisphere', {
-        skyColor: types.string,
-        groundColor: types.string,
-        intensity: types.number
-      }),
-      directional: types.model('Directional', {
-        color: types.string,
-        intensity: types.number,
-        position: types.model('shadowLightPosition', {
-          x: types.number,
-          y: types.number,
-          z: types.number
-        })
-      })
-    }),
     basic: types.model('Basic', {
-      isNight: types.boolean,
-      isFPS: types.boolean,
-      SeaRotationSpeed: types.number,
-      SkyRotationSpeed: types.number,
-      AirPlanePropellerRotationSpeed: types.number
+      isFPS: types.boolean
     }),
     mouse: types.model('Mouse', {
       position: types.model({
@@ -56,74 +31,26 @@ export const SceneStore = types
         y: types.number
       })
     }),
-    plane: types.model('Plane', {
-      collisionSpeed: types.model({
-        x: types.number,
-        y: types.number
-      })
-    }),
     game: types.model('Game', {
       speed: 0,
-      initSpeed: .00035,
       baseSpeed: .00035,
       targetBaseSpeed: .00035,
-      incrementSpeedByTime: .0000025,
-      incrementSpeedByLevel: .000005,
-      distanceForSpeedUpdate: 100,
-      speedLastUpdate: 0,
-
       distance: 0,
       ratioSpeedDistance: 50,
-      energy: 100,
-      ratioSpeedEnergy: 3,
-
-      level: 1,
-      levelLastUpdate: 0,
-      distanceForLevelUpdate: 1000,
-
       planeDefaultHeight: 100,
-      planeAmpHeight: 80,
-      planeAmpWidth: 75,
-      planeMoveSensitivity: 0.005,
-      planeRotXSensitivity: 0.0008,
-      planeRotZSensitivity: 0.0004,
       planeFallSpeed: .001,
       planeMinSpeed: 1.2,
       planeMaxSpeed: 1.6,
       planeSpeed: 0,
       planeCollisionDisplacementX: 0,
       planeCollisionSpeedX: 0,
-
       planeCollisionDisplacementY: 0,
       planeCollisionSpeedY: 0,
-
       planeCollisionDisplacementZ: 0,
       planeCollisionSpeedZ: 0,
-
-      seaRadius: 600,
-      seaLength: 800,
-
-      wavesMinAmp: 5,
-      wavesMaxAmp: 20,
-      wavesMinSpeed: 0.001,
-      wavesMaxSpeed: 0.003,
-
-      cameraFarPos: 500,
-      cameraNearPos: 150,
-      cameraSensitivity: 0.002,
-
-      coinDistanceTolerance: 15,
-      coinValue: 3,
-      coinsSpeed: .5,
-      coinLastSpawn: 0,
-      distanceForCoinsSpawn: 100,
-
-      enemyDistanceTolerance: 10,
-      enemyValue: 10,
       enemiesSpeed: .6,
       enemyLastSpawn: 0,
-      distanceForEnemiesSpawn: 50,
-
+      distanceForEnemiesSpawn: 100,
       status: 'playing'
     }),
     global: types.model('Global', {
@@ -148,46 +75,23 @@ export const SceneStore = types
   }))
   .volatile((self) => {
 
-    const cameraRef = new THREE.PerspectiveCamera(
-      self.camera.fieldOfView,
-      self.cameraAspectRatio,
-      self.camera.nearPlane,
-      self.camera.farPlane
-    );
+    const cameraRef = new THREE.PerspectiveCamera(self.camera.fieldOfView, self.cameraAspectRatio, 1, 10000);
     cameraRef.position.x = self.camera.position.x;
     cameraRef.position.y = self.camera.position.y;
     cameraRef.position.z = self.camera.position.z;
 
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true
-    });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
     renderer.shadowMap.enabled = true;
 
     const scene = new THREE.Scene();
     const fogColor = getEnv<{ $colors: IColorsStore }>(self).$colors.fog || '#ffffff';
-    scene.fog = new THREE.Fog(Number.parseInt((fogColor).slice(1), 16), self.fog.nearPlane, self.fog.farPlane);
+    scene.fog = new THREE.Fog(Number.parseInt((fogColor).slice(1), 16), 100, 950);
 
-    const hemisphereLight = new THREE.HemisphereLight(
-      self.lights.hemisphere.skyColor,
-      self.lights.hemisphere.groundColor,
-      self.lights.hemisphere.intensity
-    );
-
+    const hemisphereLight = new THREE.HemisphereLight('#aaaaaa', '#000000', 0.9);
     const ambientLightRef = new THREE.AmbientLight('#fff', .2);
-
-    const shadowLight = new THREE.DirectionalLight(
-      self.lights.directional.color,
-      self.lights.directional.intensity
-    );
-
-    shadowLight.position.set(
-      self.lights.directional.position.x,
-      self.lights.directional.position.y,
-      self.lights.directional.position.z
-    );
-
+    const shadowLight = new THREE.DirectionalLight('#ffffff', 0.9);
+    shadowLight.position.set(150, 360, 350);
     shadowLight.castShadow = true;
     shadowLight.shadow.camera.left = -400;
     shadowLight.shadow.camera.right = 400;
@@ -248,10 +152,7 @@ export const SceneStore = types
           .start();
       },
       updateColors($colors: IColorsSnapShot) {
-        self.scene.fog = new THREE.Fog(
-          ($colors.fog as any),
-          self.fog.nearPlane, self.fog.farPlane
-        );
+        self.scene.fog = new THREE.Fog(($colors.fog as any), 100, 950);
         if (self.objects.seaRef
           && self.objects.skyRef
           && self.objects.airPlaneRef) {
@@ -383,6 +284,7 @@ export const SceneStore = types
               self.game.planeCollisionSpeedX = 100 * diffPosition.x / d;
               self.game.planeCollisionSpeedY = 100 * diffPosition.y / d;
               self.game.planeCollisionSpeedZ = 100 * diffPosition.z / d;
+              applyAction(self, { name: 'changeGameStatus', args: [ 'failed' ] });
               new TWEEN.Tween({ intensity: 1.5 })
                 .to({ intensity: 0.2 }, 500)
                 .onUpdate(({ intensity }) => self.ambientLightRef.intensity = intensity)
@@ -455,6 +357,14 @@ export const SceneStore = types
         self.game.baseSpeed += (self.game.targetBaseSpeed - self.game.baseSpeed) * self.global.deltaTime * 0.02;
         self.game.speed = self.game.baseSpeed * self.game.planeSpeed;
       },
+      updateFailedState() {
+        self.game.speed *= 0.99;
+        self.objects.airPlaneRef!.mesh.rotation.z +=
+          (-Math.PI / 2 - self.objects.airPlaneRef!.mesh.rotation.z) * .0002 * self.global.deltaTime;
+        self.objects.airPlaneRef!.mesh.rotation.x += 0.0003 * self.global.deltaTime;
+        self.game.planeFallSpeed *= 1.05;
+        self.objects.airPlaneRef!.mesh.position.y -= self.game.planeFallSpeed * self.global.deltaTime;
+      },
       updateSea() {
         self.objects.seaRef!.moveWaves();
         self.objects.seaRef!.mesh.rotation.z += self.game.speed * self.global.deltaTime;
@@ -464,6 +374,9 @@ export const SceneStore = types
       },
       updateSky() {
         self.objects.skyRef!.mesh.rotation.z += self.game.speed * self.global.deltaTime;
+      },
+      changeGameStatus(status: string) {
+        self.game.status = status;
       },
       loop() {
         let deltaTime = 0;
@@ -479,7 +392,7 @@ export const SceneStore = types
               && self.objects.skyRef
               && self.objects.airPlaneRef) {
 
-              if (true) { // playing
+              if (self.game.status === 'playing') { // playing
                 if (Math.floor(self.game.distance) % Math.floor(self.game.distanceForEnemiesSpawn) === 0
                   && Math.floor(self.game.distance) > self.game.enemyLastSpawn) {
                   applyAction(self, { name: 'spawnNewEnemies' });
@@ -488,6 +401,11 @@ export const SceneStore = types
                 applyAction(self, { name: 'updatePlane' });
                 applyAction(self, { name: 'updateDistance' });
                 applyAction(self, { name: 'updatePlayingSpeed' });
+              } else if (self.game.status === 'failed') {
+                applyAction(self, { name: 'updateFailedState' });
+                if (self.objects.airPlaneRef!.mesh.position.y < -200) {
+                  applyAction(self, { name: 'changeGameStatus', args: [ 'forReplay' ] });
+                }
               }
               applyAction(self, { name: 'updateSea' });
               applyAction(self, { name: 'updateSky' });
@@ -504,14 +422,6 @@ export const SceneStore = types
       }
     };
   });
-
-function normalize(v: number, vmin: number, vmax: number, tmin: number, tmax: number) {
-  const nv = Math.max(Math.min(v, vmax), vmin);
-  const dv = vmax - vmin;
-  const pc = (nv - vmin) / dv;
-  const dt = tmax - tmin;
-  return tmin + (pc * dt);
-}
 
 type SceneStoreType = typeof SceneStore.Type;
 

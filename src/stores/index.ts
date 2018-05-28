@@ -12,7 +12,7 @@ export const summer: IColorsSnapShot = {
   backgroundTop: '#e5f2e5',
   backgroundBottom: '#62c2b5',
   fog: '#f7d9aa',
-  enemy: '#f25346',
+  enemy: '#d377f2',
   coin: '#009999'
 };
 
@@ -38,42 +38,17 @@ export const stores = {
   $scene: SceneStore.create({
     camera: {
       position: { x: 0, y: 100, z: 200 },
-      fieldOfView: 60,
-      nearPlane: 1,
-      farPlane: 10000
+      fieldOfView: 60
     },
     container: {
       width: null,
       height: null
     },
-    fog: {
-      nearPlane: 100,
-      farPlane: 950
-    },
-    lights: {
-      hemisphere: {
-        skyColor: '#aaaaaa',
-        groundColor: '#000000',
-        intensity: 0.9
-      },
-      directional: {
-        color: '#ffffff',
-        intensity: 0.9,
-        position: { x: 150, y: 360, z: 350 }
-      }
-    },
     basic: {
-      isNight: false,
-      isFPS: false,
-      SeaRotationSpeed: 0.005,
-      SkyRotationSpeed: 0.01,
-      AirPlanePropellerRotationSpeed: 0.3
+      isFPS: false
     },
     mouse: {
       position: { x: 0, y: 0 }
-    },
-    plane: {
-      collisionSpeed: { x: 0, y: 0 }
     },
     game: {},
     global: {
