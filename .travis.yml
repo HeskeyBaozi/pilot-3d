@@ -1,0 +1,21 @@
+
+language: node_js
+node_js:
+  - "8"
+
+before_script:
+  - rm -rf dist/
+
+script:
+  - yarn run build
+
+after_script:
+  - cd dist
+  - git init
+  - git add -A
+  - git commit -m "Deploy"
+  - git push -f "https://${GH_TOKEN}@github.com/pilot-3d.git" master:gh-pages
+
+branches:
+  only:
+    - master
