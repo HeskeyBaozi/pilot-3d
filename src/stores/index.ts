@@ -1,5 +1,6 @@
 import { ColorsStore, IColorsSnapShot } from './Colors';
 import { SceneStore } from './Scene';
+import { UIStore } from './UI';
 
 export const summer: IColorsSnapShot = {
   planeBody: '#ACBC65',
@@ -27,7 +28,7 @@ export const autumn: IColorsSnapShot = {
   backgroundTop: '#D5D7CC',
   backgroundBottom: '#F4D5B7',
   fog: '#f7d9aa',
-  enemy: '#f25346',
+  enemy: '#bce258',
   coin: '#009999'
 };
 
@@ -50,9 +51,12 @@ export const stores = {
     mouse: {
       position: { x: 0, y: 0 }
     },
-    game: {},
+    game: {
+      status: 'ready'
+    },
     global: {
       deltaTime: 0
     }
-  }, { $colors })
+  }, { $colors }),
+  $ui: UIStore.create({ isDebug: false })
 };

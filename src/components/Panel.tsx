@@ -1,11 +1,11 @@
 import { Collapse, InputNumber, Select, Slider, Switch } from 'antd';
 import { action, computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { applySnapshot } from 'mobx-state-tree';
 import React, { SyntheticEvent } from 'react';
 import { autumn, summer } from '../stores';
 import { IColorsStore } from '../stores/Colors';
 import { ISceneStore } from '../stores/Scene';
+import { UIStoreType } from '../stores/UI';
 import styles from './Panel.less';
 
 const Option = Select.Option;
@@ -13,9 +13,10 @@ const Option = Select.Option;
 interface IPanelProps {
   $colors?: IColorsStore;
   $scene?: ISceneStore;
+  $ui?: UIStoreType;
 }
 
-@inject('$colors', '$scene')
+@inject('$colors', '$scene', '$ui')
 @observer
 export default class Panel extends React.Component<IPanelProps> {
 
@@ -26,15 +27,17 @@ export default class Panel extends React.Component<IPanelProps> {
   };
 
   @observable
-  opacity = 50;
+  opacity = 80;
 
   @computed
   get panelStyle() {
+    const { $ui } = this.props;
     return {
       ...this.panelFixedStyle,
       top: this.panelFixedStyle.top + 'px',
       left: this.panelFixedStyle.left + 'px',
-      opacity: this.opacity / 100
+      opacity: this.opacity / 100,
+      display: $ui!.isDebug ? 'block' : 'none'
     };
   }
 
@@ -93,10 +96,10 @@ export default class Panel extends React.Component<IPanelProps> {
     const { $colors } = this.props;
     switch (val) {
       case 'summer':
-        applySnapshot($colors!, summer);
+        $colors!.useSummer();
         break;
       case 'autumn':
-        applySnapshot($colors!, autumn);
+        $colors!.useAutumn();
         break;
     }
   }

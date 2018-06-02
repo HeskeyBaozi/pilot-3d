@@ -16,8 +16,8 @@ export default class IndexPage extends React.Component<{}> {
     return (
       <Provider { ...stores }>
         <div>
-          <Panel/>
           <UILayer/>
+          <Panel/>
           <PilotScene/>
         </div>
       </Provider>

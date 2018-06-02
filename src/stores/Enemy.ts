@@ -1,4 +1,4 @@
-import { getEnv, types, unprotect } from 'mobx-state-tree';
+import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
 import { IColorsStore } from './Colors';
 
@@ -9,7 +9,7 @@ export const EnemyStore = types
     zOffset: 0
   })
   .volatile((self) => {
-    const geom = new THREE.TetrahedronGeometry(8, 2);
+    const geom = new THREE.OctahedronGeometry(8, 1);
     const mat = new THREE.MeshPhongMaterial({
       color: getEnv<{ $colors: IColorsStore }>(self as any).$colors.enemy,
       shininess: 0,

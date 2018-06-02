@@ -51,7 +51,7 @@ export const SceneStore = types
       enemiesSpeed: .6,
       enemyLastSpawn: 0,
       distanceForEnemiesSpawn: 100,
-      status: 'playing'
+      status: types.enumeration([ 'ready', 'playing', 'failed', 'waitingForReplay' ])
     }),
     global: types.model('Global', {
       deltaTime: types.number
@@ -375,8 +375,32 @@ export const SceneStore = types
       updateSky() {
         self.objects.skyRef!.mesh.rotation.z += self.game.speed * self.global.deltaTime;
       },
-      changeGameStatus(status: string) {
+      changeGameStatus(status: any) {
         self.game.status = status;
+      },
+      resetGame() {
+        self.game = {
+          speed: 0,
+          baseSpeed: .00035,
+          targetBaseSpeed: .00035,
+          distance: 0,
+          ratioSpeedDistance: 50,
+          planeDefaultHeight: 100,
+          planeFallSpeed: .001,
+          planeMinSpeed: 1.2,
+          planeMaxSpeed: 1.6,
+          planeSpeed: 0,
+          planeCollisionDisplacementX: 0,
+          planeCollisionSpeedX: 0,
+          planeCollisionDisplacementY: 0,
+          planeCollisionSpeedY: 0,
+          planeCollisionDisplacementZ: 0,
+          planeCollisionSpeedZ: 0,
+          enemiesSpeed: .6,
+          enemyLastSpawn: 0,
+          distanceForEnemiesSpawn: 100,
+          status: 'waitingForReplay'
+        };
       },
       loop() {
         let deltaTime = 0;
@@ -404,7 +428,7 @@ export const SceneStore = types
               } else if (self.game.status === 'failed') {
                 applyAction(self, { name: 'updateFailedState' });
                 if (self.objects.airPlaneRef!.mesh.position.y < -200) {
-                  applyAction(self, { name: 'changeGameStatus', args: [ 'forReplay' ] });
+                  applyAction(self, { name: 'changeGameStatus', args: [ 'waitingForReplay' ] });
                 }
               }
               applyAction(self, { name: 'updateSea' });

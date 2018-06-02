@@ -10,14 +10,16 @@ import { EnemiesHolder } from '../stores/Enemy';
 import { ISceneStore } from '../stores/Scene';
 import { SeaStore } from '../stores/Sea';
 import { SkyStore } from '../stores/Sky';
+import { UIStoreType } from '../stores/UI';
 import styles from './Scene.less';
 
 interface IPilotSceneProps {
   $colors?: IColorsStore;
   $scene?: ISceneStore;
+  $ui?: UIStoreType;
 }
 
-@inject('$colors', '$scene')
+@inject('$colors', '$scene', '$ui')
 @observer
 export default class PilotScene extends React.Component<IPilotSceneProps> {
 
@@ -96,9 +98,28 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
   }
 
   handleKeyDown = (e: any) => {
-    if (e.keyCode === 32) {
-      const { $scene } = this.props;
-      $scene!.toggleFPS();
+    const { $scene, $ui, $colors } = this.props;
+    switch (e.keyCode) {
+      case 32: // Space
+        $scene!.toggleFPS();
+        break;
+      case 81: // Q
+        $ui!.toggleIsDebug();
+        break;
+      case 49: // 1
+        $colors!.useSummer();
+        break;
+      case 50: // 2
+        $colors!.useAutumn();
+        break;
+      case 13: // Enter
+        if ($scene!.game.status === 'ready' || $scene!.game.status === 'waitingForReplay') {
+          if ($scene!.game.status === 'waitingForReplay') {
+            $scene!.resetGame();
+          }
+          $scene!.changeGameStatus('playing');
+        }
+        break;
     }
   }
 

@@ -1,4 +1,5 @@
-import { types } from 'mobx-state-tree';
+import { applySnapshot, types } from 'mobx-state-tree';
+import { autumn, summer } from './index';
 
 export const ColorsStore = types
   .model('Colors', {
@@ -28,6 +29,12 @@ export const ColorsStore = types
   .actions((self: { [key: string]: string }) => ({
     modifyColor(name: string, value: string) {
       self[ name ] = value;
+    },
+    useSummer() {
+      applySnapshot(self, summer);
+    },
+    useAutumn() {
+      applySnapshot(self, autumn);
     }
   }));
 
