@@ -14,7 +14,7 @@ after_script:
   - git init
   - git add -A
   - git commit -m "Deploy"
-  - git push -f "https://${GH_TOKEN}@github.com/pilot-3d.git" master:gh-pages
+  - git push -f "https://${GH_TOKEN}@github.com/HeskeyBaozi/pilot-3d.git" master:gh-pages
 
 branches:
   only:
