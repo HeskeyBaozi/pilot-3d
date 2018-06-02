@@ -50,6 +50,8 @@ export default class UILayer extends React.Component<IUILayerProps> {
           <p>快捷键 Q：显示控制面板</p>
           <p>快捷键 1/2：分别显示两种皮肤</p>
           <p>快捷键 空格：切换视角</p>
+          <p>鼠标滚轮调整镜头远近</p>
+          <p>按回车开始</p>
         </div>
       );
     }
