@@ -1,3 +1,4 @@
+import * as TWEEN from '@tweenjs/tween.js';
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
 import { IColorsSnapShot, IColorsStore } from './Colors';

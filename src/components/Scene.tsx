@@ -3,16 +3,15 @@ import { inject, observer } from 'mobx-react';
 import { onSnapshot } from 'mobx-state-tree';
 import React, { MouseEventHandler, WheelEventHandler } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import * as THREE from 'three';
 import { AirPlaneStore } from '../stores/AirPlane';
 import { IColorsStore } from '../stores/Colors';
 import { EnemiesHolder } from '../stores/Enemy';
+import { ParticlesHolder } from '../stores/Particle';
 import { ISceneStore } from '../stores/Scene';
 import { SeaStore } from '../stores/Sea';
 import { SkyStore } from '../stores/Sky';
 import { UIStoreType } from '../stores/UI';
 import styles from './Scene.less';
-import { ParticlesHolder } from '../stores/Particle';
 
 interface IPilotSceneProps {
   $colors?: IColorsStore;
@@ -61,6 +60,7 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
     $scene!.addSky(sky);
     $scene!.addAirPlane(airPlane);
     $scene!.addEnemiesHolder(enemiesHolder);
+    $scene!.addParticlesHolder(particlesHolder);
     onSnapshot($colors!, (colors) => {
       $scene!.updateColors(colors);
     });

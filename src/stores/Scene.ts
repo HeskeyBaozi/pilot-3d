@@ -8,7 +8,6 @@ import { EnemiesHolderType, EnemyStoreType } from './Enemy';
 import { ParticlesHolderType } from './Particle';
 import { ISeaStore } from './Sea';
 import { ISkyStore } from './Sky';
-import { MeshPhongMaterial } from 'three';
 
 export const SceneStore = types
   .model('Scene', {
@@ -287,7 +286,7 @@ export const SceneStore = types
             const d = diffPosition.length();
             if (d < 10) {
               if (!Array.isArray(enemy.mesh.material)) {
-                const color = (enemy.mesh.material as MeshPhongMaterial).color;
+                const color = (enemy.mesh.material as THREE.MeshPhongMaterial).color;
                 if (color) {
                   self.objects.particlesHolderRef
                     .spawnParticles(enemy.mesh.position.clone(), 15, color.getHexString(), 3, self.particlesPool);
