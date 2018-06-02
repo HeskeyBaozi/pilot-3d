@@ -5,8 +5,10 @@ import { normalize } from '../utils';
 import { IAirPlaneStore } from './AirPlane';
 import { IColorsSnapShot, IColorsStore } from './Colors';
 import { EnemiesHolderType, EnemyStoreType } from './Enemy';
+import { ParticlesHolderType } from './Particle';
 import { ISeaStore } from './Sea';
 import { ISkyStore } from './Sky';
+import { MeshPhongMaterial } from 'three';
 
 export const SceneStore = types
   .model('Scene', {
@@ -110,7 +112,8 @@ export const SceneStore = types
       seaRef?: ISeaStore,
       skyRef?: ISkyStore,
       airPlaneRef?: IAirPlaneStore,
-      enemiesHolderRef?: EnemiesHolderType
+      enemiesHolderRef?: EnemiesHolderType,
+      particlesHolderRef?: ParticlesHolderType
     } = {};
 
     const enemiesPool: EnemyStoreType[] = [];
@@ -236,6 +239,10 @@ export const SceneStore = types
         self.objects.enemiesHolderRef.spawnEnemies(15, self.enemiesPool);
         self.scene.add(enemiesHolder.mesh);
       },
+      addParticlesHolder(particlesHolder: ParticlesHolderType) {
+        self.objects.particlesHolderRef = particlesHolder;
+        self.scene.add(particlesHolder.mesh);
+      },
       updateDistance() {
         self.game.distance += self.game.speed * self.global.deltaTime * self.game.ratioSpeedDistance;
       },
@@ -244,7 +251,8 @@ export const SceneStore = types
       },
       rotateEnemies() {
         if (self.objects.airPlaneRef
-          && self.objects.enemiesHolderRef) {
+          && self.objects.enemiesHolderRef
+          && self.objects.particlesHolderRef) {
 
           for (let i = 0; i < self.objects.enemiesHolderRef.enemiesInUse.length; i++) {
             const enemy = self.objects.enemiesHolderRef.enemiesInUse[ i ];
@@ -278,7 +286,14 @@ export const SceneStore = types
             const diffPosition = self.objects.airPlaneRef.mesh.position.clone().sub(enemy.mesh.position.clone());
             const d = diffPosition.length();
             if (d < 10) {
-              // particlesHolder
+              if (!Array.isArray(enemy.mesh.material)) {
+                const color = (enemy.mesh.material as MeshPhongMaterial).color;
+                if (color) {
+                  self.objects.particlesHolderRef
+                    .spawnParticles(enemy.mesh.position.clone(), 15, color.getHexString(), 3, self.particlesPool);
+                }
+              }
+
               self.enemiesPool.unshift(self.objects.enemiesHolderRef.takeOneAt(i));
               self.objects.enemiesHolderRef.mesh.remove(enemy.mesh);
               self.game.planeCollisionSpeedX = 100 * diffPosition.x / d;

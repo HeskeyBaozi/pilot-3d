@@ -12,6 +12,7 @@ import { SeaStore } from '../stores/Sea';
 import { SkyStore } from '../stores/Sky';
 import { UIStoreType } from '../stores/UI';
 import styles from './Scene.less';
+import { ParticlesHolder } from '../stores/Particle';
 
 interface IPilotSceneProps {
   $colors?: IColorsStore;
@@ -54,6 +55,7 @@ export default class PilotScene extends React.Component<IPilotSceneProps> {
     }, { $colors });
     const airPlane = AirPlaneStore.create({}, { $colors });
     const enemiesHolder = EnemiesHolder.create({ enemiesInUse: [] }, { $colors });
+    const particlesHolder = ParticlesHolder.create({ particlesInUse: [] }, { $colors });
 
     $scene!.addSea(sea);
     $scene!.addSky(sky);
