@@ -42,6 +42,19 @@ export default class UILayer extends React.Component<IUILayerProps> {
     }
   }
 
+  @computed
+  get Info() {
+    if (this.props.$scene!.game.status === 'ready') {
+      return (
+        <div className={ styles.info }>
+          <p>快捷键 Q：显示控制面板</p>
+          <p>快捷键 1/2：分别显示两种皮肤</p>
+          <p>快捷键 空格：切换视角</p>
+        </div>
+      );
+    }
+  }
+
   render() {
     const { $scene } = this.props;
     return (
@@ -52,6 +65,7 @@ export default class UILayer extends React.Component<IUILayerProps> {
           <span className={ styles.unit }>M</span>
         </h2>
         <div className={ styles.notice }>{ this.noticeText }</div>
+        { this.Info }
       </div>
     );
   }
