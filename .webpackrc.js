@@ -1,7 +1,10 @@
 export default {
   env: {
     production: {
-      publicPath: '/pilot-3d/'
+      define: {
+        'BASE_URL': '/pilot-3d/'
+      },
+      publicPath: '/pilot-3d/static'
     }
   }
 };
