@@ -2,9 +2,11 @@
 
 基于`three.js`、`WebGL`官网飞行员游戏动画场景
 
+[在线预览 Live Demo](https://heskeybaozi.github.io/pilot-3d/)
+
 > 参考 [The Making of “The Aviator”: Animating a Basic 3D Scene with Three.js](https://tympanus.net/codrops/2016/04/26/the-aviator-animating-basic-3d-scene-threejs/?utm_source=tuicool)
 
-## Preview
+## Preview [Live Demo](https://heskeybaozi.github.io/pilot-3d/)
 
 ![v1](./docs/images/view1.png)
 
