@@ -1,5 +1,6 @@
 import { getEnv, types } from 'mobx-state-tree';
 import * as THREE from 'three';
+import cloudURL from '../assets/cloud.jpg';
 import { IColorsSnapShot, IColorsStore } from './Colors';
 
 export const CloudStore = types
@@ -17,7 +18,12 @@ export const CloudStore = types
       self.geometry.size
     );
 
+    const loader = new THREE.TextureLoader();
+
+    const cloudTexture = loader.load(cloudURL);
+
     const mat = new THREE.MeshPhongMaterial({
+      map: cloudTexture,
       color: getEnv<{ $colors: IColorsStore }>(self as any).$colors.cloud
     });
 
